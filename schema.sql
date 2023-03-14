@@ -4,6 +4,7 @@ DROP TABLE IF EXISTS departments,
                      role_id,
                      employee;
 CREATE DATABASE employee_manifest;
+
 USE employee_manifest;
 
 CREATE TABLE departments (
@@ -28,38 +29,6 @@ CREATE TABLE employee (
     manager_id      INT,
     primary key (id)
 );
-
-SELECT 'LOADING departments' as 'INFO';
-
-INSERT INTO departments (name) VALUES 
-('Marketing'), ('Sales'), ('Engineering');
-
-
-INSERT INTO Managers (name) VALUES 
-("boss", 10000000, 1),
-("HEAD OF SALES", 1000000, 1),
-("HEAD OF Marketing", 2000000, 2)
-("HEAD ENGINEER", 4000000,3)
-
-insert into role_id (title, salary, department_id) VALUES
-
-("Manager Marketing", 1000000, 1),
-
-("Manager Sales", 100000, 2),
-
-("Workerbee Marketing", 10000, 1),
-
-("Salesperson", 1000, 2),
-
-("Engineering Manager", 100, 3),
-
-("Engineer", 10, 3);
-
-
-insert into employee (name, role_id, manager_id) VALUES
-(bob, a, 1, 1)
-(joe, b, 2, 1)
-
 
 
 //*select id from departments where name = 'PUT NAME HERE';*//
