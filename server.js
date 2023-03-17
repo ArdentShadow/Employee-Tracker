@@ -14,19 +14,13 @@ const validate = require('./Validate/Validate');
 
 connection.connect((error) => {
   if (error) throw error;
-  console.log(chalk.yellow.bold(`====================================================================================`));
-  console.log(``);
-  console.log(chalk.greenBright.bold(figlet.textSync('Employee Tracker')));
-  console.log(``);
-  console.log(`                                                          ` + chalk.greenBright.bold('Created By: Joseph DeWoody'));
-  console.log(``);
-  console.log(chalk.yellow.bold(`====================================================================================`));
+  console.log(chalk.redBright.bold(`=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=`));
+
+  console.log(chalk.red.bold(figlet.textSync('HELLO EMPLOYEES')));
+
+  console.log(chalk.redBright.bold(`=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=`));
   promptUser();
 });
-
-
-
-
 
 console.log("hello World 2");
 //Prompt for user Choices
@@ -54,11 +48,13 @@ const promptUser = () => {
     .then((answers) => {
         const {choices} = answers;
 
+        console.log("parse choises");
         if (choices === 'View ALL Employees') {
             viewAllEmployees();
         }
         if (choices === 'View ALL Departments') {
-            viewAllDepartments();     
+          console.log("parse all dept");
+          viewAllDepartments();     
         }
         if (choices === 'View ALL Roles') {
             viewAllRoles();     
@@ -87,76 +83,55 @@ const promptUser = () => {
     });
     console.log("hello World 3");
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // View All Employees
-    const viewAllEmployees = () => {
-        let sql =       `SELECT employee.id, 
-                        employee.first_name, 
-                        employee.last_name, 
-                        role.title, 
-                        department.department_name AS 'department', 
-                        role.salary
-                        FROM employee, role, department 
-                        WHERE department.id = role.department_id 
-                        AND role.id = employee.role_id
-                        ORDER BY employee.id ASC`;
-        connection.promise().query(sql, (error, response) => {
-          if (error) throw error;
-          console.log(chalk.yellow.bold(`====================================================================================`));
-          console.log(`                              ` + chalk.green.bold(`Current Employees:`));
-          console.log(chalk.yellow.bold(`====================================================================================`));
-          console.table(response);
-          console.log(chalk.yellow.bold(`====================================================================================`));
-          promptUser();
-        });
-      };
-      console.log("hello World mid");
-
-      // View all Roles
-      const viewAllRoles = () => {
-        console.log(chalk.yellow.bold(`====================================================================================`));
-        console.log(`                              ` + chalk.green.bold(`Current Employee Roles:`));
-        console.log(chalk.yellow.bold(`====================================================================================`));
-        const sql =     `SELECT role.id, role.title, department.department_name AS department
-                        FROM role
-                        INNER JOIN department ON role.department_id = department.id`;
-        connection.promise().query(sql, (error, response) => {
-          if (error) throw error;
-            response.forEach((role) => {console.log(role.title);});
-            console.log(chalk.yellow.bold(`====================================================================================`));
-            promptUser();
-        });
-      };
-      
-      // View all Departments
-      const viewAllDepartments = () => {
-        const sql =   `SELECT department.id AS id, department.department_name AS department FROM department`; 
-        connection.promise().query(sql, (error, response) => {
-          if (error) throw error;
-          console.log(chalk.yellow.bold(`====================================================================================`));
-          console.log(`                              ` + chalk.green.bold(`All Departments:`));
-          console.log(chalk.yellow.bold(`====================================================================================`));
-          console.table(response);
-          console.log(chalk.yellow.bold(`====================================================================================`));
-          promptUser();
-        });
-      };
 }
 console.log("hello World 5");
  
-// Add a New Employee
+
+    // View All Employees
+    const viewAllEmployees = () => {
+      let sql =       `SELECT employee.id, 
+                      employee.first_name, 
+                      employee.last_name, 
+                      role_id.title, 
+                      departments.name AS 'departments', 
+                      role_id.salary
+                      FROM employee, role_id, departments 
+                      WHERE departments.id = role_id.department_id 
+                      AND role_id.id = employee.role_id
+                      ORDER BY employee.id ASC`;
+      connection.query(sql, (error, response) => {
+        if (error) throw error;
+        console.log(`                              ` + chalk.blue.bold(`Current Employees:`));
+        console.table(response);
+        promptUser();
+      });
+    };
+
+    // View all Roles
+    const viewAllRoles = () => {
+      console.log(`                              ` + chalk.red.bold(`Current Roles:`));
+      const sql =     `SELECT role_id.id, role_id.title, departments.name AS departments
+                      FROM role_id
+                      INNER JOIN departments ON role_id.department_id = departments.id`;
+      connection.query(sql, (error, response) => {
+        if (error) throw error;
+          response.forEach((role) => {console.log(role.title);});
+          promptUser();
+      });
+    };
+    
+    // View all Departments
+    const viewAllDepartments = () => {
+      const sql =   `SELECT departments.id AS id, departments.name AS departments FROM departments`; 
+      connection.query(sql, (error, response) => {
+        if (error) throw error;
+        console.log(`                              ` + chalk.magenta.bold(`All Departments:`));
+        console.table(response);
+        promptUser();
+      });
+    };
+
+    // Add New Employees
 const addEmployee = () => {
     inquirer.prompt([
       {
@@ -189,7 +164,7 @@ const addEmployee = () => {
       .then(answer => {
       const crit = [answer.fistName, answer.lastName]
       const roleSql = `SELECT role.id, role.title FROM role`;
-      connection.promise().query(roleSql, (error, data) => {
+      connection.query(roleSql, (error, data) => {
         if (error) throw error; 
         const roles = data.map(({ id, title }) => ({ name: title, value: id }));
         inquirer.prompt([
@@ -204,7 +179,7 @@ const addEmployee = () => {
                 const role = roleChoice.role;
                 crit.push(role);
                 const managerSql =  `SELECT * FROM employee`;
-                connection.promise().query(managerSql, (error, data) => {
+                connection.query(managerSql, (error, data) => {
                   if (error) throw error;
                   const managers = data.map(({ id, first_name, last_name }) => ({ name: first_name + " "+ last_name, value: id }));
                   inquirer.prompt([
@@ -232,10 +207,10 @@ const addEmployee = () => {
     });
   };
   
-  // Add a New Role
+  // Add New Role
   const addRole = () => {
     const sql = 'SELECT * FROM department'
-    connection.promise().query(sql, (error, response) => {
+    connection.query(sql, (error, response) => {
         if (error) throw error;
         let deptNamesArray = [];
         response.forEach((department) => {deptNamesArray.push(department.department_name);});
@@ -284,11 +259,9 @@ const addEmployee = () => {
               let sql =   `INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)`;
               let crit = [createdRole, answer.salary, departmentId];
   
-              connection.promise().query(sql, crit, (error) => {
+              connection.query(sql, crit, (error) => {
                 if (error) throw error;
-                console.log(chalk.yellow.bold(`====================================================================================`));
-                console.log(chalk.greenBright(`Role successfully created!`));
-                console.log(chalk.yellow.bold(`====================================================================================`));
+                console.log(chalk.red(`Created Role Successfully `));
                 viewAllRoles();
               });
             });
@@ -297,7 +270,7 @@ const addEmployee = () => {
     };
 
 
-    // Add a New Department
+    // Add New Department
 const addDepartment = () => {
     inquirer
       .prompt([
@@ -309,11 +282,11 @@ const addDepartment = () => {
         }
       ])
       .then((answer) => {
-        let sql =     `INSERT INTO department (department_name) VALUES (?)`;
+        let sql =     `INSERT INTO departments (name) VALUES (?)`;
         connection.query(sql, answer.newDepartment, (error, response) => {
           if (error) throw error;
           console.log(``);
-          console.log(chalk.greenBright(answer.newDepartment + ` Department successfully created!`));
+          console.log(chalk.red(answer.newDepartment + ` Department successfully created!`));
           console.log(``);
           viewAllDepartments();
         });
@@ -321,11 +294,11 @@ const addDepartment = () => {
 };
 
 
-// Delete an Employee
+// Delete Employees
 const removeEmployee = () => {
     let sql =     `SELECT employee.id, employee.first_name, employee.last_name FROM employee`;
 
-    connection.promise().query(sql, (error, response) => {
+    connection.query(sql, (error, response) => {
       if (error) throw error;
       let employeeNamesArray = [];
       response.forEach((employee) => {employeeNamesArray.push(`${employee.first_name} ${employee.last_name}`);});
@@ -354,9 +327,7 @@ const removeEmployee = () => {
           let sql = `DELETE FROM employee WHERE employee.id = ?`;
           connection.query(sql, [employeeId], (error) => {
             if (error) throw error;
-            console.log(chalk.redBright.bold(`====================================================================================`));
-            console.log(chalk.redBright(`Employee Successfully Removed`));
-            console.log(chalk.RedBright.bold(`====================================================================================`));
+            console.log(chalk.red(`Employee Successfully Removed`));
             viewAllEmployees();
           });
         });
@@ -367,7 +338,7 @@ const removeEmployee = () => {
 const removeRole = () => {
     let sql = `SELECT role.id, role.title FROM role`;
 
-    connection.promise().query(sql, (error, response) => {
+    connection.query(sql, (error, response) => {
       if (error) throw error;
       let roleNamesArray = [];
       response.forEach((role) => {roleNamesArray.push(role.title);});
@@ -391,11 +362,9 @@ const removeRole = () => {
           });
 
           let sql =   `DELETE FROM role WHERE role.id = ?`;
-          connection.promise().query(sql, [roleId], (error) => {
+          connection.query(sql, [roleId], (error) => {
             if (error) throw error;
-            console.log(chalk.redBright.bold(`====================================================================================`));
-            console.log(chalk.greenBright(`Role Successfully Removed`));
-            console.log(chalk.redBright.bold(`====================================================================================`));
+            console.log(chalk.red(`Role Successfully Removed`));
             viewAllRoles();
           });
         });
@@ -405,7 +374,7 @@ const removeRole = () => {
 // Delete a Department
 const removeDepartment = () => {
     let sql =   `SELECT department.id, department.department_name FROM department`;
-    connection.promise().query(sql, (error, response) => {
+    connection.query(sql, (error, response) => {
       if (error) throw error;
       let departmentNamesArray = [];
       response.forEach((department) => {departmentNamesArray.push(department.department_name);});
@@ -429,11 +398,9 @@ const removeDepartment = () => {
           });
 
           let sql =     `DELETE FROM department WHERE department.id = ?`;
-          connection.promise().query(sql, [departmentId], (error) => {
+          connection.query(sql, [departmentId], (error) => {
             if (error) throw error;
-            console.log(chalk.redBright.bold(`====================================================================================`));
-            console.log(chalk.redBright(`Department Successfully Removed`));
-            console.log(chalk.redBright.bold(`====================================================================================`));
+            console.log(chalk.yellow(`Department Successfully Removed`));
             viewAllDepartments();
           });
         });

@@ -5,7 +5,7 @@ const connect = mysql.createConnection({
   port: 3306,
   user: 'root',
   password: 'Gimpy123!@#',
-  database: 'employees'
+  database: 'employee_manifest'
 });
 
 module.exports = connect;
