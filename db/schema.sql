@@ -31,4 +31,4 @@ CREATE TABLE employee (
 );
 
 
-//*select id from departments where name = 'PUT NAME HERE';*//
+/*select id from departments where name = 'PUT NAME HERE';*/

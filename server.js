@@ -12,14 +12,31 @@ const figlet = require('figlet');
 const validate = require('./Validate/Validate');
 //AREA FOR HEADER o
 
+connection.connect((error) => {
+  if (error) throw error;
+  console.log(chalk.yellow.bold(`====================================================================================`));
+  console.log(``);
+  console.log(chalk.greenBright.bold(figlet.textSync('Employee Tracker')));
+  console.log(``);
+  console.log(`                                                          ` + chalk.greenBright.bold('Created By: Joseph DeWoody'));
+  console.log(``);
+  console.log(chalk.yellow.bold(`====================================================================================`));
+  promptUser();
+});
+
+
+
+
+
+console.log("hello World 2");
 //Prompt for user Choices
-const promptuser = () => {
+const promptUser = () => {
     inquirer.prompt([
         {
-            name: 'Options',
+            name: 'choices',
             type: 'list',
             message: 'plese select an option',
-            choice: [
+            choices: [
                 'View ALL Employees',
                 'View ALL Roles',
                 'View ALL Departments',
@@ -68,6 +85,7 @@ const promptuser = () => {
             connection.end();     
         }
     });
+    console.log("hello World 3");
 
 
 
@@ -104,7 +122,8 @@ const promptuser = () => {
           promptUser();
         });
       };
-      
+      console.log("hello World mid");
+
       // View all Roles
       const viewAllRoles = () => {
         console.log(chalk.yellow.bold(`====================================================================================`));
@@ -135,7 +154,8 @@ const promptuser = () => {
         });
       };
 }
-
+console.log("hello World 5");
+ 
 // Add a New Employee
 const addEmployee = () => {
     inquirer.prompt([
